@@ -1,0 +1,13 @@
+*.o
+Users/
+bin/
+autom4te.cache/
+*.log
+*.status
+.depend
+configure
+find_dep.c
+find_dep.h
+lexer.c
+y.tab.c
+makedepf90

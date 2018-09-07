@@ -27,26 +27,28 @@ PROG = makedepf90
 
 VERSION = 2.8.9
 
-CC		?= cc
-CFLAGS		?= -g -O2
-CPPFLAGS	+= -DVERSION=\"$(VERSION)\"
+CC = gcc
+CFLAGS = -g -O2
+CPPFLAGS =  -DVERSION=\"$(VERSION)\"
 
-LEX		?= flex
-LFLAGS		?= -i -B 
+LEX = flex
+LFLAGS = -i -B 
 
-YACC		?= bison
-YFLAGS		?= -y
+YACC = bison -y
+YFLAGS = 
+
+DESTDIR ?= .
 
 # Where to install stuff
-PREFIX		?= /usr/local
-MANDIR		?= ${PREFIX}/man
-
-bindir		= ${PREFIX}/bin
+prefix = /Users/morten/Documents/AdaptiveResolutionMDhPF/ext/makedepf90/bin
+exec_prefix = ${prefix}
+bindir = ${exec_prefix}/bin
+mandir = ${prefix}/share/man
 
 # How to install stuff
-INSTALL		?= /usr/bin/install -c
-INSTALL_PROGRAM ?= ${INSTALL}
-INSTALL_DATA	?= ${INSTALL} -m 644
+INSTALL=/usr/bin/install -c
+INSTALL_PROGRAM=${INSTALL}
+INSTALL_DATA=${INSTALL} -m 644
 
 SRC_H = errormesg.h finddep.h global.h list.h macro.h modfile_name.h utils.h \
 	xmalloc.h
@@ -76,10 +78,13 @@ LIBOBJS =
 .y.c:
 	$(YACC) -d $(YFLAGS) $<
 	mv y.tab.c $@
+	mv y.tab.h $*.h
 
 .y.h: 
 	$(YACC) -d $(YFLAGS) $<
 	mv y.tab.h $@
+	mv y.tab.c $*.c
+
 
 $(PROG): $(OBJ)
 	$(CC) -o $@ $(CPPFLAGS) $(CFLAGS) $(OBJ) $(LIBOBJS) $(LIBS)
@@ -98,7 +103,6 @@ install: $(PROG)  makedepf90.1
 	$(INSTALL_PROGRAM) $(PROG) $(DESTDIR)$(bindir)
 	$(INSTALL) -d $(DESTDIR)$(mandir)/man1
 	$(INSTALL_DATA) makedepf90.1 $(DESTDIR)$(mandir)/man1
-
 install-strip: $(PROG) makedepf90.1
 	$(INSTALL) -d $(DESTDIR)$(bindir)
 	$(INSTALL_PROGRAM) -s $(PROG) $(DESTDIR)$(bindir)
@@ -135,7 +139,7 @@ configure: configure.in
 	autoconf
 
 Makefile: Makefile.in configure
-	./configure --prefix=${PREFIX}
+	./configure
 
 Makefile.def: Makefile
 	cp Makefile Makefile.def
